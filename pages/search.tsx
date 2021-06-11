@@ -1,27 +1,22 @@
-import cn from 'classnames'
-import type { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
-import Link from 'next/link'
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-
+import type { Product } from '@commerce/types/product'
 import { Layout } from '@components/common'
 import { ProductCard } from '@components/product'
-import type { Product } from '@commerce/types/product'
 import { Container, Grid, Skeleton } from '@components/ui'
-
 import useSearch from '@framework/product/use-search'
-import commerce from '@lib/api/commerce'
+// TODO(bc) Remove this. This should come from the API
+import getSlug from '@lib/get-slug'
 import rangeMap from '@lib/range-map'
-
 import {
   filterQuery,
   getCategoryPath,
   getDesignerPath,
   useSearchMeta,
 } from '@lib/search'
-
-// TODO(bc) Remove this. This should come from the API
-import getSlug from '@lib/get-slug'
+import cn from 'classnames'
+import type { InferGetStaticPropsType } from 'next'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
 
 const SORT = Object.entries({
   'latest-desc': 'Latest arrivals',
@@ -30,27 +25,27 @@ const SORT = Object.entries({
   'price-desc': 'Price: High to low',
 })
 
-export async function getStaticProps({
-  preview,
-  locale,
-  locales,
-}: GetStaticPropsContext) {
-  const config = { locale, locales }
-  const { pages } = await commerce.getAllPages({ config, preview })
-  const { categories, brands } = await commerce.getSiteInfo({ config, preview })
-  return {
-    props: {
-      pages,
-      categories,
-      brands,
-    },
-    revalidate: 200,
-  }
-}
+// export async function getStaticProps({
+//   preview,
+//   locale,
+//   locales,
+// }: GetStaticPropsContext) {
+//   const config = { locale, locales }
+//   const { pages } = await commerce.getAllPages({ config, preview })
+//   const { categories, brands } = await commerce.getSiteInfo({ config, preview })
+//   return {
+//     props: {
+//       pages,
+//       categories,
+//       brands,
+//     },
+//     revalidate: 200,
+//   }
+// }
 
 export default function Search({
-  categories,
-  brands,
+  categories = [],
+  brands = [],
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const [activeFilter, setActiveFilter] = useState('')
   const [toggleFilter, setToggleFilter] = useState(false)
@@ -88,8 +83,8 @@ export default function Search({
 
   return (
     <Container>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-3 mb-20">
-        <div className="col-span-8 lg:col-span-2 order-1 lg:order-none">
+      <div className="grid grid-cols-1 gap-4 mt-3 mb-20 lg:grid-cols-12">
+        <div className="order-1 col-span-8 lg:col-span-2 lg:order-none">
           {/* Categories */}
           <div className="relative inline-block w-full">
             <div className="lg:hidden">
@@ -97,7 +92,7 @@ export default function Search({
                 <button
                   type="button"
                   onClick={(e) => handleClick(e, 'categories')}
-                  className="flex justify-between w-full rounded-sm border border-gray-300 px-4 py-3 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-normal active:bg-gray-50 active:text-gray-800 transition ease-in-out duration-150"
+                  className="flex justify-between w-full px-4 py-3 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-normal active:bg-gray-50 active:text-gray-800"
                   id="options-menu"
                   aria-haspopup="true"
                   aria-expanded="true"
@@ -106,7 +101,7 @@ export default function Search({
                     ? `Category: ${activeCategory?.name}`
                     : 'All Categories'}
                   <svg
-                    className="-mr-1 ml-2 h-5 w-5"
+                    className="w-5 h-5 ml-2 -mr-1"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
@@ -127,7 +122,7 @@ export default function Search({
                   : ''
               }`}
             >
-              <div className="rounded-sm bg-white shadow-xs lg:bg-none lg:shadow-none">
+              <div className="bg-white rounded-sm shadow-xs lg:bg-none lg:shadow-none">
                 <div
                   role="menu"
                   aria-orientation="vertical"
@@ -190,12 +185,12 @@ export default function Search({
 
           {/* Designs */}
           <div className="relative inline-block w-full">
-            <div className="lg:hidden mt-3">
+            <div className="mt-3 lg:hidden">
               <span className="rounded-md shadow-sm">
                 <button
                   type="button"
                   onClick={(e) => handleClick(e, 'brands')}
-                  className="flex justify-between w-full rounded-sm border border-gray-300 px-4 py-3 bg-white text-sm leading-5 font-medium text-gray-900 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-normal active:bg-gray-50 active:text-gray-800 transition ease-in-out duration-150"
+                  className="flex justify-between w-full px-4 py-3 text-sm font-medium leading-5 text-gray-900 transition duration-150 ease-in-out bg-white border border-gray-300 rounded-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-normal active:bg-gray-50 active:text-gray-800"
                   id="options-menu"
                   aria-haspopup="true"
                   aria-expanded="true"
@@ -204,7 +199,7 @@ export default function Search({
                     ? `Design: ${activeBrand?.name}`
                     : 'All Designs'}
                   <svg
-                    className="-mr-1 ml-2 h-5 w-5"
+                    className="w-5 h-5 ml-2 -mr-1"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
@@ -225,7 +220,7 @@ export default function Search({
                   : ''
               }`}
             >
-              <div className="rounded-sm bg-white shadow-xs lg:bg-none lg:shadow-none">
+              <div className="bg-white rounded-sm shadow-xs lg:bg-none lg:shadow-none">
                 <div
                   role="menu"
                   aria-orientation="vertical"
@@ -291,9 +286,9 @@ export default function Search({
           </div>
         </div>
         {/* Products */}
-        <div className="col-span-8 order-3 lg:order-none">
+        <div className="order-3 col-span-8 lg:order-none">
           {(q || activeCategory || activeBrand) && (
-            <div className="mb-12 transition ease-in duration-75">
+            <div className="mb-12 transition duration-75 ease-in">
               {data ? (
                 <>
                   <span
@@ -366,21 +361,21 @@ export default function Search({
         </div>
 
         {/* Sort */}
-        <div className="col-span-8 lg:col-span-2 order-2 lg:order-none">
+        <div className="order-2 col-span-8 lg:col-span-2 lg:order-none">
           <div className="relative inline-block w-full">
             <div className="lg:hidden">
               <span className="rounded-md shadow-sm">
                 <button
                   type="button"
                   onClick={(e) => handleClick(e, 'sort')}
-                  className="flex justify-between w-full rounded-sm border border-gray-300 px-4 py-3 bg-white text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-normal active:bg-gray-50 active:text-gray-800 transition ease-in-out duration-150"
+                  className="flex justify-between w-full px-4 py-3 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-normal active:bg-gray-50 active:text-gray-800"
                   id="options-menu"
                   aria-haspopup="true"
                   aria-expanded="true"
                 >
                   {sort ? `Sort: ${sort}` : 'Relevance'}
                   <svg
-                    className="-mr-1 ml-2 h-5 w-5"
+                    className="w-5 h-5 ml-2 -mr-1"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
@@ -399,7 +394,7 @@ export default function Search({
                 activeFilter !== 'sort' || toggleFilter !== true ? 'hidden' : ''
               }`}
             >
-              <div className="rounded-sm bg-white shadow-xs lg:bg-none lg:shadow-none">
+              <div className="bg-white rounded-sm shadow-xs lg:bg-none lg:shadow-none">
                 <div
                   role="menu"
                   aria-orientation="vertical"

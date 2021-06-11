@@ -1,39 +1,39 @@
-import commerce from '@lib/api/commerce'
 import { Layout } from '@components/common'
 import { ProductCard } from '@components/product'
-import { Grid, Marquee, Hero } from '@components/ui'
+import { Grid, Hero, Marquee } from '@components/ui'
 // import HomeAllProductsGrid from '@components/common/HomeAllProductsGrid'
-import type { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
+import type { InferGetStaticPropsType } from 'next'
 
-export async function getStaticProps({
-  preview,
-  locale,
-  locales,
-}: GetStaticPropsContext) {
-  const config = { locale, locales }
-  const { products } = await commerce.getAllProducts({
-    variables: { first: 12 },
-    config,
-    preview,
-    // Saleor provider only
-    ...({ featured: true } as any),
-  })
-  const { categories, brands } = await commerce.getSiteInfo({ config, preview })
-  const { pages } = await commerce.getAllPages({ config, preview })
+// export async function getStaticProps({
+//   preview,
+//   locale,
+//   locales,
+// }: GetStaticPropsContext) {
+//   const config = { locale, locales }
+//   const { products } = {}
+//   // await commerce.getAllProducts({
+//   //   variables: { first: 12 },
+//   //   config,
+//   //   preview,
+//   //   // Saleor provider only
+//   //   ...({ featured: true } as any),
+//   // })
+//   const { categories, brands } = await commerce.getSiteInfo({ config, preview })
+//   const { pages } = await commerce.getAllPages({ config, preview })
 
-  return {
-    props: {
-      products,
-      categories,
-      brands,
-      pages,
-    },
-    revalidate: 14400,
-  }
-}
+//   return {
+//     props: {
+//       products,
+//       categories,
+//       brands,
+//       pages,
+//     },
+//     revalidate: 14400,
+//   }
+// }
 
 export default function Home({
-  products,
+  products = [],
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <>
